@@ -1,0 +1,38 @@
+# Secrets — never commit
+.env
+*.key
+*.pem
+
+# Database (contains attacker data — keep locally)
+*.db
+*.sqlite
+
+# Logs and captures
+logs/
+*.log
+
+# GeoIP databases
+*.mmdb
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+
+# Docker volumes
+cowrie_logs/
+cowrie_downloads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

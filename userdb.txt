@@ -1,0 +1,53 @@
+# Cowrie userdb.txt — Default credential pairs for medical IoT simulation
+# Format: username:password  (use * to match any password)
+# These are real default credentials found on medical IoT devices in the wild.
+# Attackers using credential-stuffing lists will successfully "authenticate".
+#
+# Reference: Shodan research, ICS-CERT advisories, vendor default lists
+
+# ── Universal defaults ─────────────────────────────────────────
+root:root
+root:admin
+root:password
+root:123456
+root:toor
+root:1234
+root:pass
+root:alpine
+root:
+admin:admin
+admin:password
+admin:1234
+admin:123456
+admin:admin123
+admin:
+
+# ── Medical device specific defaults ──────────────────────────
+# BD Alaris defaults (ICS-CERT ADV-2020-082)
+alaris:alaris
+service:service1
+clinician:clinician
+biomedeng:bme2014
+
+# Philips defaults
+philips:philips
+admin:philips1
+service:1234
+
+# GE Healthcare defaults
+gehc:gehc
+admin:gehc123
+service:service
+
+# Spacelabs defaults
+spacelabs:spacelabs
+user:user
+
+# Generic embedded Linux defaults
+pi:raspberry
+ubuntu:ubuntu
+user:user
+guest:guest
+operator:operator
+tech:tech1234
+support:support

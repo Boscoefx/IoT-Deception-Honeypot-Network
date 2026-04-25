@@ -1,0 +1,82 @@
+version: "3.9"
+
+networks:
+  honeypot_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+    # Isolated — no routing to host network beyond mapped ports
+
+volumes:
+  cowrie_logs:
+  cowrie_downloads:
+
+services:
+
+  # ─────────────────────────────────────────────
+  # Cowrie SSH/Telnet Honeypot
+  # Simulates: Medical IoT device (Infusion Pump)
+  # ─────────────────────────────────────────────
+  cowrie:
+    build:
+      context: .
+      dockerfile: cowrie.dockerfile
+    container_name: cowrie_honeypot
+    restart: unless-stopped
+    ports:
+      - "${HONEYPOT_SSH_PORT:-2222}:2222"     # SSH honeypot
+      - "${HONEYPOT_TELNET_PORT:-2323}:2323"  # Telnet honeypot
+    volumes:
+      - cowrie_logs:/cowrie/var/log/cowrie
+      - cowrie_downloads:/cowrie/var/lib/cowrie/downloads
+      - ../cowrie-config/cowrie.cfg:/cowrie/etc/cowrie.cfg:ro
+      - ../cowrie-config/userdb.txt:/cowrie/etc/userdb.txt:ro
+    networks:
+      honeypot_net:
+        ipv4_address: 172.20.0.10
+    environment:
+      - COWRIE_HOSTNAME=${HONEYPOT_HOSTNAME:-MedDevice-Infusion-01}
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2222"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─────────────────────────────────────────────
+  # HTTP Panel Honeypot
+  # Simulates: Unauthenticated IoT web management
+  # ─────────────────────────────────────────────
+  http_honeypot:
+    build:
+      context: .
+      dockerfile: honeyd.dockerfile
+    container_name: http_honeypot
+    restart: unless-stopped
+    ports:
+      - "${HONEYPOT_HTTP_PORT:-8080}:80"
+    volumes:
+      - cowrie_logs:/logs  # Share log volume for unified analysis
+    networks:
+      honeypot_net:
+        ipv4_address: 172.20.0.11
+    environment:
+      - DEVICE_MODEL=BD_Alaris_8015
+      - FIRMWARE_VERSION=12.1.2
+
+  # ─────────────────────────────────────────────
+  # Log Shipper (Filebeat)
+  # Ships logs from containers to analysis engine
+  # ─────────────────────────────────────────────
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.12.0
+    container_name: log_shipper
+    restart: unless-stopped
+    user: root
+    volumes:
+      - cowrie_logs:/cowrie_logs:ro
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    networks:
+      - honeypot_net
+    depends_on:
+      - cowrie
