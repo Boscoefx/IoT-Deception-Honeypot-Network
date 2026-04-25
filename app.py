@@ -71,8 +71,9 @@ def api_overview():
 
     lateral = conn.execute("""
         SELECT COUNT(*) FROM events e
-        JOIN enriched_ips g ON e.src_ip = g.ip
-        WHERE g.is_internal = 1
+        WHERE e.src_ip LIKE '192.168.%'
+           OR e.src_ip LIKE '10.%'
+           OR e.src_ip LIKE '172.16.%'
     """).fetchone()[0]
     stats["lateral_movement_alerts"] = lateral
 
@@ -88,12 +89,11 @@ def api_top_ips():
         SELECT e.src_ip,
                COUNT(*) as event_count,
                SUM(CASE WHEN e.event_type = 'login_success' THEN 1 ELSE 0 END) as successes,
-               g.country,
-               g.city,
-               g.org,
+               NULL as country,
+               NULL as city,
+               NULL as org,
                MAX(e.timestamp) as last_seen
         FROM events e
-        LEFT JOIN enriched_ips g ON e.src_ip = g.ip
         GROUP BY e.src_ip
         ORDER BY event_count DESC
         LIMIT ?
@@ -106,18 +106,21 @@ def api_top_ips():
 def api_attack_map():
     """GeoIP coordinates for world map visualization."""
     conn = get_db()
-    rows = conn.execute("""
-        SELECT g.ip, g.country, g.country_code, g.city,
-               g.latitude, g.longitude, g.org,
-               COUNT(e.id) as attacks
-        FROM enriched_ips g
-        JOIN events e ON g.ip = e.src_ip
-        WHERE g.latitude IS NOT NULL
-          AND g.is_internal = 0
-        GROUP BY g.ip
-        ORDER BY attacks DESC
-        LIMIT 500
-    """).fetchall()
+    try:
+        rows = conn.execute("""
+            SELECT g.ip, g.country, g.country_code, g.city,
+                   g.latitude, g.longitude, g.org,
+                   COUNT(e.id) as attacks
+            FROM enriched_ips g
+            JOIN events e ON g.ip = e.src_ip
+            WHERE g.latitude IS NOT NULL
+              AND g.is_internal = 0
+            GROUP BY g.ip
+            ORDER BY attacks DESC
+            LIMIT 500
+        """).fetchall()
+    except Exception:
+        rows = []
     conn.close()
     return jsonify([dict(r) for r in rows])
 
