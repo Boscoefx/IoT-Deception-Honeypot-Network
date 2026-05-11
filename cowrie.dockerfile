@@ -31,8 +31,8 @@ RUN git clone https://github.com/cowrie/cowrie.git . \
     && cowrie-env/bin/pip install -r requirements.txt
 
 # Copy base config (will be overridden by volume mount)
-COPY ../cowrie-config/cowrie.cfg etc/cowrie.cfg
-COPY ../cowrie-config/userdb.txt etc/userdb.txt
+#COPY ../cowrie-config/cowrie.cfg etc/cowrie.cfg
+#COPY ../cowrie-config/userdb.txt etc/userdb.txt
 
 # Set up directories
 RUN mkdir -p var/log/cowrie var/lib/cowrie/downloads \

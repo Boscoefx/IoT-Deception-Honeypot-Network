@@ -50,7 +50,7 @@ services:
   http_honeypot:
     build:
       context: .
-      dockerfile: honeyd.dockerfile
+      dockerfile: cowrie.dockerfile
     container_name: http_honeypot
     restart: unless-stopped
     ports:
@@ -68,15 +68,15 @@ services:
   # Log Shipper (Filebeat)
   # Ships logs from containers to analysis engine
   # ─────────────────────────────────────────────
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:8.12.0
-    container_name: log_shipper
-    restart: unless-stopped
-    user: root
-    volumes:
-      - cowrie_logs:/cowrie_logs:ro
-      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-    networks:
-      - honeypot_net
-    depends_on:
-      - cowrie
+ #filebeat:
+   # image: docker.elastic.co/beats/filebeat:8.12.0
+   # container_name: log_shipper
+   #restart: unless-stopped
+   # user: root
+   #volumes:
+   #   - cowrie_logs:/cowrie_logs:ro
+   #   - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+   # networks:
+    #  - honeypot_net
+    #depends_on:
+     # - cowrie

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏥 Healthcare IoT Deception Honeypot Network
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
@@ -179,6 +180,9 @@ SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
 
 # GeoIP (get free key at maxmind.com)
 MAXMIND_LICENSE_KEY=your_key_here
+=======
+
+>>>>>>> df00da6da2fdcbb0014f521efbd54045ffb897c6
 
 # Dashboard
 DASHBOARD_PORT=5000
@@ -193,12 +197,21 @@ The Flask dashboard auto-refreshes every 30 seconds and displays:
 
 | Panel | Description |
 |-------|-------------|
+<<<<<<< HEAD
 | 🗺️ Attack Map | GeoIP-mapped source of all connection attempts |
 | 📊 Top Attacker IPs | Ranked table of most active attackers |
 | 💻 Command Frequency | Bar chart of most-attempted shell commands |
 | 📁 Payload Gallery | Dropped malware files with SHA256 hashes |
 | ⏱️ Attack Timeline | Hourly attack volume over the last 7 days |
 | 🚨 Lateral Movement | Internal IP alerts in real time |
+=======
+|  Attack Map | GeoIP-mapped source of all connection attempts |
+| Top Attacker IPs | Ranked table of most active attackers |
+| Command Frequency | Bar chart of most-attempted shell commands |
+|  Payload Gallery | Dropped malware files with SHA256 hashes |
+|  Attack Timeline | Hourly attack volume over the last 7 days |
+|  Lateral Movement | Internal IP alerts in real time |
+>>>>>>> df00da6da2fdcbb0014f521efbd54045ffb897c6
 
 ---
 
@@ -225,7 +238,11 @@ This system supports HIPAA Security Rule compliance by providing:
 - **§164.308(a)(6)** — Security incident documentation with full attacker logs
 - **§164.312(b)** — Audit controls through immutable honeypot logs
 
+<<<<<<< HEAD
 > ⚠️ **Legal Notice:** Only deploy this honeypot on networks you own or have explicit written authorization to monitor. Honeypot data may be used as evidence; consult legal counsel before internet exposure.
+=======
+>  **Legal Notice:** Only deploy this honeypot on networks you own or have explicit written authorization to monitor. Honeypot data may be used as evidence; consult legal counsel before internet exposure.
+>>>>>>> df00da6da2fdcbb0014f521efbd54045ffb897c6
 
 ---
 
@@ -240,6 +257,9 @@ This system supports HIPAA Security Rule compliance by providing:
 
 ---
 
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
