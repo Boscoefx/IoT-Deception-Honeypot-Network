@@ -1,266 +1,488 @@
-<<<<<<< HEAD
-# 🏥 Healthcare IoT Deception Honeypot Network
 
-[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
-[![Docker](https://img.shields.io/badge/Docker-Required-2496ED.svg)](https://docker.com)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Security](https://img.shields.io/badge/Security-Honeypot-red.svg)]()
+# Healthcare IoT Deception Honeypot Network
 
-> A proactive IoT deception system that simulates vulnerable medical devices to trap attackers, capture malicious payloads, and generate real-time threat intelligence — all within a fully isolated Docker sandbox.
+## Project Overview
 
----
+The Healthcare IoT Deception Honeypot Network is a cybersecurity research and threat intelligence platform designed to simulate vulnerable healthcare IoT devices inside an isolated Docker-based environment. The project proactively deceives attackers, captures malicious activity, records attacker behavior, and visualizes security telemetry using the Elastic Stack.
 
-## 📋 Table of Contents
+This project focuses on healthcare cyber-physical systems such as:
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
-- [Project Structure](#project-structure)
-- [Configuration](#configuration)
-- [Dashboard](#dashboard)
-- [Alerting](#alerting)
-- [HIPAA Compliance Notes](#hipaa-compliance-notes)
-- [Week-by-Week Roadmap](#week-by-week-roadmap)
+* Smart patient monitoring systems
+* IoT-enabled medical devices
+* Smart HVAC infrastructure
+* Network-connected healthcare equipment
+
+The environment uses low-to-medium interaction honeypots to safely monitor:
+
+* SSH brute-force attacks
+* Telnet attacks
+* Malicious payload downloads
+* Unauthorized login attempts
+* Command execution attempts
+* Threat actor telemetry
 
 ---
 
-## Overview
+# Project Objectives
 
-This project deploys a network of low-to-medium interaction honeypots that impersonate real healthcare IoT devices (infusion pumps, HVAC controllers, patient monitors). When attackers probe or compromise these fake devices, every keystroke, command, and payload drop is logged, parsed, and visualized on a live threat dashboard.
+## Primary Goal
 
-**Key Capabilities:**
-- Simulates SSH/Telnet services with default medical IoT credentials
-- Captures brute-force attempts, dropped malware, and shell commands
-- Sends real-time alerts when internal IPs interact with honeypots (lateral movement detection)
-- Generates GeoIP-enriched threat intelligence reports
-- Fully sandboxed — attackers cannot pivot to the real network
+Shift from reactive cybersecurity defense to proactive threat intelligence gathering using deception technologies.
+
+## Key Security Objectives
+
+* Simulate vulnerable healthcare IoT devices
+* Capture attacker interactions safely
+* Prevent attacker escape using Docker isolation
+* Centralize attack logs using Elasticsearch
+* Visualize attack telemetry using Kibana
+* Extract indicators of compromise (IoCs)
+* Demonstrate healthcare-focused cyber deception architecture
 
 ---
 
-## Architecture
+# Features
 
+## Implemented Features
+
+### Honeypot Infrastructure
+
+* Docker-isolated honeypot environment
+* Simulated healthcare IoT devices
+* Cowrie-based SSH/Telnet deception
+* Medical device banner simulation
+* Vulnerable service emulation
+
+### Threat Collection
+
+* SSH brute-force logging
+* Telnet attack logging
+* Login telemetry capture
+* Command execution capture
+* Payload metadata logging
+* Threat severity tagging
+
+### Elastic Stack Integration
+
+* Elasticsearch indexing
+* Kibana dashboards
+* Threat visualization
+* Real-time log monitoring
+* Attack telemetry analysis
+
+### Python Automation
+
+* Log parsing automation
+* SQLite threat database
+* Elasticsearch shipping pipeline
+* Payload extraction workflow
+* Threat enrichment utilities
+
+### Security Operations Workflow
+
+* Threat monitoring
+* IOC extraction
+* Simulated malware tracking
+* Dashboard-based analysis
+* Incident visibility
+
+---
+
+# Technology Stack
+
+| Component          | Technology            |
+| ------------------ | --------------------- |
+| Honeypot           | Cowrie                |
+| Containerization   | Docker                |
+| Search Engine      | Elasticsearch         |
+| Visualization      | Kibana                |
+| Backend Automation | Python                |
+| Database           | SQLite                |
+| Log Shipping       | Python + Elastic APIs |
+| Operating System   | Kali Linux            |
+
+---
+
+# Final Project Architecture
+
+```text
+                    ┌─────────────────────────┐
+                    │      Attacker / Bot     │
+                    │ SSH / Telnet Attempts   │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                ┌────────────────────────────────┐
+                │  Docker Isolated Honeypot Lab │
+                └────────────────────────────────┘
+                                 │
+         ┌───────────────────────┴────────────────────────┐
+         │                                                │
+         ▼                                                ▼
+┌────────────────────┐                        ┌────────────────────┐
+│  Cowrie Honeypot   │                        │ HTTP IoT Honeypot  │
+│ SSH/Telnet Capture │                        │ Medical Web Device │
+└──────────┬─────────┘                        └──────────┬─────────┘
+           │                                             │
+           └─────────────────────┬───────────────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │      SQLite Database    │
+                    │  events / payload logs  │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │ Python Log Parser       │
+                    │ elastic_shipper.py      │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │     Elasticsearch       │
+                    │  Threat Intelligence    │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │         Kibana          │
+                    │ Dashboards & Analytics  │
+                    └─────────────────────────┘
 ```
-┌─────────────────────────────────────────────────────────┐
-│                  Docker Isolated Network                │
-│                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │  Cowrie SSH  │  │  Cowrie      │  │  Honeyd      │  │
-│  │  Honeypot    │  │  Telnet      │  │  HTTP Panel  │  │
-│  │  Port 2222   │  │  Port 2323   │  │  Port 8080   │  │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  │
-│         └─────────────────┴──────────────────┘          │
-│                           │                             │
-│                    ┌──────▼───────┐                     │
-│                    │  Log Shipper │                     │
-│                    │  (Filebeat)  │                     │
-│                    └──────┬───────┘                     │
-└───────────────────────────┼─────────────────────────────┘
-                            │
-              ┌─────────────▼──────────────┐
-              │   Python Analysis Engine   │
-              │  • GeoIP enrichment        │
-              │  • Payload extraction      │
-              │  • Alert generation        │
-              └─────────────┬──────────────┘
-                            │
-              ┌─────────────▼──────────────┐
-              │   Threat Dashboard (Flask)  │
-              │  • Live attack map         │
-              │  • Command frequency       │
-              │  • Attacker timeline       │
-              └────────────────────────────┘
-```
 
 ---
 
-## Prerequisites
+# Project Structure
 
-- Docker & Docker Compose v2+
-- Python 3.10+
-- 2GB+ RAM recommended
-- (Optional) MaxMind GeoLite2 free account for GeoIP
-
-```bash
-# Check Docker
-docker --version
-docker compose version
-
-# Check Python
-python3 --version
-```
-
----
-
-## Quick Start
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/yourusername/healthcare-iot-honeypot.git
-cd healthcare-iot-honeypot
-
-# 2. Copy and configure environment
-cp .env.example .env
-# Edit .env with your settings (see Configuration section)
-
-# 3. Install Python dependencies
-pip install -r requirements.txt
-
-# 4. Start all honeypot containers
-docker compose up -d
-
-# 5. Verify containers are running
-docker compose ps
-
-# 6. Launch the threat dashboard
-python dashboard/app.py
-
-# 7. Open dashboard at http://localhost:5000
-```
-
----
-
-## Project Structure
-
-```
-healthcare-iot-honeypot/
-├── docker/
-│   ├── docker-compose.yml          # Orchestrates all honeypot containers
-│   ├── cowrie.dockerfile           # Custom Cowrie image for medical IoT simulation
-│   └── honeyd.dockerfile           # Honeyd HTTP panel simulation
-├── cowrie-config/
-│   ├── cowrie.cfg                  # Main Cowrie configuration
-│   ├── userdb.txt                  # Default credential pairs (admin/admin, etc.)
-│   └── fs.pickle                   # Simulated medical device filesystem
-├── dashboard/
-│   ├── app.py                      # Flask threat dashboard server
-│   ├── templates/
-│   │   └── index.html              # Dashboard UI
-│   └── static/
-│       └── dashboard.js            # Live-updating chart logic
+```text
+IoT-Deception-Honeypot-Network/
+│
+├── app.py
+├── alerter.py
+├── elastic_shipper.py
+├── log_parser.py
+├── payload_extractor.py
+├── http_honeypot_server.py
+├── cowrie.cfg
+├── userdb.txt
+├── start.sh
+├── requirements.txt
+├── README.md
+├── ARCHITECTURE.md
+├── docker-compose.yml
+├── docker-compose-elastic.yml
+├── cowrie.dockerfile
+├── honeypot.db
 ├── scripts/
-│   ├── log_parser.py               # Parses raw Cowrie JSON logs
-│   ├── geoip_enricher.py           # Adds GeoIP data to attacker IPs
-│   ├── payload_extractor.py        # Extracts and hashes dropped malware
-│   └── report_generator.py         # Weekly threat intelligence PDF report
-├── alerts/
-│   ├── alerter.py                  # Alert engine (email + Slack)
-│   └── internal_ip_monitor.py      # Lateral movement detector
-├── tests/
-│   ├── test_parser.py              # Unit tests for log parser
-│   └── test_alerter.py             # Unit tests for alert engine
-├── logs/                           # Mounted log volume (gitignored)
-├── docs/
-│   └── ARCHITECTURE.md             # Detailed architecture notes
-├── .env.example                    # Environment variable template
-├── requirements.txt                # Python dependencies
-└── README.md                       # This file
+│   ├── __init__.py
+│   └── log_parser.py
+│
+└── Kibana + Elasticsearch Stack
 ```
 
 ---
 
-## Configuration
+# Installation Guide
 
-Copy `.env.example` to `.env` and fill in your values:
+## 1. Clone Repository
 
-```env
-# Honeypot Settings
-HONEYPOT_HOSTNAME=MedDevice-Infusion-Pump-01
-HONEYPOT_SSH_PORT=2222
-HONEYPOT_TELNET_PORT=2323
-HONEYPOT_HTTP_PORT=8080
-
-# Internal network CIDR — alerts fire if these IPs hit the honeypot
-INTERNAL_NETWORK_CIDR=192.168.1.0/24
-
-# Alert Settings
-ALERT_EMAIL=security@yourhospital.com
-SMTP_HOST=smtp.yourhospital.com
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
-
-# GeoIP (get free key at maxmind.com)
-MAXMIND_LICENSE_KEY=your_key_here
-=======
-
->>>>>>> df00da6da2fdcbb0014f521efbd54045ffb897c6
-
-# Dashboard
-DASHBOARD_PORT=5000
-DASHBOARD_SECRET_KEY=change_me_in_production
+```bash
+git clone https://github.com/YOUR_USERNAME/IoT-Deception-Honeypot-Network.git
+cd IoT-Deception-Honeypot-Network
 ```
 
 ---
 
-## Dashboard
+# 2. Install Docker
 
-The Flask dashboard auto-refreshes every 30 seconds and displays:
+```bash
+sudo apt update
+sudo apt install docker.io docker-compose -y
+```
 
-| Panel | Description |
-|-------|-------------|
-<<<<<<< HEAD
-| 🗺️ Attack Map | GeoIP-mapped source of all connection attempts |
-| 📊 Top Attacker IPs | Ranked table of most active attackers |
-| 💻 Command Frequency | Bar chart of most-attempted shell commands |
-| 📁 Payload Gallery | Dropped malware files with SHA256 hashes |
-| ⏱️ Attack Timeline | Hourly attack volume over the last 7 days |
-| 🚨 Lateral Movement | Internal IP alerts in real time |
-=======
-|  Attack Map | GeoIP-mapped source of all connection attempts |
-| Top Attacker IPs | Ranked table of most active attackers |
-| Command Frequency | Bar chart of most-attempted shell commands |
-|  Payload Gallery | Dropped malware files with SHA256 hashes |
-|  Attack Timeline | Hourly attack volume over the last 7 days |
-|  Lateral Movement | Internal IP alerts in real time |
->>>>>>> df00da6da2fdcbb0014f521efbd54045ffb897c6
+Enable Docker:
+
+```bash
+sudo systemctl enable docker
+sudo systemctl start docker
+```
 
 ---
 
-## Alerting
+# 3. Fix Docker Permission Issue
 
-The alert engine fires immediately when:
+Allow normal user access to Docker:
 
-1. **Any internal IP** connects to a honeypot node (lateral movement indicator)
-2. A **new payload** is uploaded to the honeypot
-3. An attacker achieves **persistent shell access**
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
-Alerts are sent via:
-- Email (SMTP)
-- Slack webhook
-- Local log file (`logs/alerts.log`)
+Verify:
 
----
-
-## HIPAA Compliance Notes
-
-This system supports HIPAA Security Rule compliance by providing:
-
-- **§164.308(a)(1)** — Risk analysis evidence via captured threat data
-- **§164.308(a)(6)** — Security incident documentation with full attacker logs
-- **§164.312(b)** — Audit controls through immutable honeypot logs
-
-<<<<<<< HEAD
-> ⚠️ **Legal Notice:** Only deploy this honeypot on networks you own or have explicit written authorization to monitor. Honeypot data may be used as evidence; consult legal counsel before internet exposure.
-=======
->  **Legal Notice:** Only deploy this honeypot on networks you own or have explicit written authorization to monitor. Honeypot data may be used as evidence; consult legal counsel before internet exposure.
->>>>>>> df00da6da2fdcbb0014f521efbd54045ffb897c6
+```bash
+docker ps
+```
 
 ---
 
-## Week-by-Week Roadmap
+# 4. Install Python Requirements
 
-| Week | Focus | Key Deliverable |
-|------|-------|-----------------|
-| 1 | Environment Setup | Docker + Cowrie deployed, medical IoT persona configured |
-| 2 | Exposure & Capture | Live logging of brute force, commands, payloads |
-| 3 | Analysis Engine | GeoIP enrichment, payload hashing, alert system |
-| 4 | Dashboard & Reporting | Live threat dashboard, HIPAA compliance report |
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## License
+# 5. Initialize SQLite Database
 
-MIT License — see [LICENSE](LICENSE) for details.
+```bash
+sqlite3 honeypot.db
+```
+
+Create tables:
+
+```sql
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT,
+    event_type TEXT,
+    src_ip TEXT,
+    src_port INTEGER,
+    username TEXT,
+    password TEXT,
+    command TEXT,
+    session_id TEXT,
+    sensor TEXT
+);
+
+CREATE TABLE IF NOT EXISTS login_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT,
+    src_ip TEXT,
+    username TEXT,
+    password TEXT,
+    success INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS payloads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT,
+    src_ip TEXT,
+    filename TEXT,
+    sha256 TEXT,
+    url TEXT
+);
+```
+
+Exit:
+
+```sql
+.exit
+```
 
 ---
 
-*Built as part of a Healthcare Cybersecurity Internship Program. For educational and authorized security research purposes only.*
+# 6. Start Elastic Stack
+
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+Services:
+
+| Service       | URL                                            |
+| ------------- | ---------------------------------------------- |
+| Elasticsearch | [http://localhost:9200](http://localhost:9200) |
+| Kibana        | [http://localhost:5601](http://localhost:5601) |
+
+---
+
+# Testing Attack Logs
+
+## Test SSH Brute Force Event
+
+```bash
+curl -X POST "localhost:9200/honeypot-events/_doc" \
+-H "Content-Type: application/json" \
+-d '{
+  "@timestamp":"2026-05-11T22:12:00Z",
+  "src_ip":"192.168.1.55",
+  "attack_type":"SSH Brute Force",
+  "username":"root",
+  "password":"toor",
+  "severity":"critical",
+  "command":"wget malware.sh",
+  "sensor":"cowrie"
+}'
+```
+
+---
+
+## Test Login Attempt
+
+```bash
+curl -X POST "localhost:9200/honeypot-logins/_doc" \
+-H "Content-Type: application/json" \
+-d '{
+  "@timestamp":"2026-05-11T22:13:00Z",
+  "src_ip":"10.0.0.5",
+  "username":"admin",
+  "password":"123456",
+  "success":false
+}'
+```
+
+---
+
+## Test Payload Upload
+
+```bash
+curl -X POST "localhost:9200/honeypot-payloads/_doc" \
+-H "Content-Type: application/json" \
+-d '{
+  "@timestamp":"2026-05-11T22:14:00Z",
+  "src_ip":"45.33.22.11",
+  "filename":"malware.sh",
+  "sha256":"e3b0c44298fc1c149afbf4c8996fb924",
+  "url":"http://malicious.site/malware.sh"
+}'
+```
+
+---
+
+# Kibana Dashboard Usage
+
+Open:
+
+```text
+http://localhost:5601
+```
+
+Navigate to:
+
+* Discover
+* Lens
+* Dashboard
+
+Available indexes:
+
+* honeypot-events
+* honeypot-logins
+* honeypot-payloads
+
+Recommended Visualizations:
+
+* Attack frequency chart
+* Top attacker IPs
+* Login brute-force trends
+* Payload download tracking
+* Severity distribution
+* SSH/Telnet attack counts
+
+---
+
+# Security Features
+
+## Isolation Controls
+
+* Docker container sandboxing
+* No direct host exposure
+* Controlled network segmentation
+* Isolated honeypot infrastructure
+
+## Threat Intelligence
+
+* IOC extraction
+* Attack telemetry
+* Login analytics
+* Command capture
+* Payload tracking
+
+## Healthcare Relevance
+
+* Simulated medical device infrastructure
+* Healthcare IoT attack surface representation
+* HIPAA-oriented monitoring concepts
+* Proactive cyber deception strategy
+
+---
+
+# Known Limitations
+
+* Geolocation enrichment partially implemented
+* Full malware reverse engineering not included
+* Cowrie runtime may require environment-specific tuning
+* Simulated attack data used for demonstrations
+
+---
+
+# Future Improvements
+
+* Real-time alerting system
+* GeoIP threat mapping
+* ML-based anomaly detection
+* SIEM integration
+* Advanced malware sandboxing
+* Threat scoring engine
+* Automated IOC correlation
+
+---
+
+# Demonstration Workflow
+
+## Step 1
+
+Start Docker and Elastic stack.
+
+## Step 2
+
+Launch honeypot services.
+
+## Step 3
+
+Inject simulated SSH/Telnet attacks.
+
+## Step 4
+
+Verify logs inside Elasticsearch.
+
+## Step 5
+
+Visualize attacks in Kibana.
+
+## Step 6
+
+Demonstrate IOC extraction and dashboard analytics.
+
+---
+
+# Final Outcome
+
+The project successfully demonstrates a healthcare-focused deception-based cybersecurity architecture capable of:
+
+* Simulating vulnerable IoT infrastructure
+* Capturing attacker behavior
+* Logging malicious activity
+* Aggregating centralized threat intelligence
+* Visualizing attack telemetry using Elastic Stack
+* Providing proactive cybersecurity monitoring workflows
+
+---
+
+# Author
+
+Cybersecurity Internship Project
+
+Healthcare IoT Deception Honeypot Network
+
+Developed using:
+
+* Docker
+* Cowrie
+* Elasticsearch
+* Kibana
+* Python
+* SQLite
