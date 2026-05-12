@@ -188,7 +188,7 @@ IoT-Deception-Honeypot-Network/
 ## 1. Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/IoT-Deception-Honeypot-Network.git
+git clone https://github.com//Boscoefx/IoT-Deception-Honeypot-Network.git
 cd IoT-Deception-Honeypot-Network
 ```
 
