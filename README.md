@@ -86,7 +86,7 @@ Shift from reactive cybersecurity defense to proactive threat intelligence gathe
 * Dashboard-based analysis
 * Incident visibility
 
----
+--- 
 
 # Technology Stack
 
