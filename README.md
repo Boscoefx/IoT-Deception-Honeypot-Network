@@ -486,4 +486,3 @@ Developed using:
 * Kibana
 * Python
 * SQLite
-* sql
