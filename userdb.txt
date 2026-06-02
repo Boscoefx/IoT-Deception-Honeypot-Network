@@ -49,5 +49,5 @@ ubuntu:ubuntu
 user:user
 guest:guest
 operator:operator
-tech:tech12345
+tech:tech1234
 support:support
