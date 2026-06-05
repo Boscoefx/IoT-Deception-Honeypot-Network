@@ -478,7 +478,7 @@ Cybersecurity Internship Project
 
 Healthcare IoT Deception Honeypot Network
 
-Developed using:
+Developed using
 
 * Docker
 * Cowrie
