@@ -485,4 +485,4 @@ Developed using
 * Elasticsearch
 * Kibana
 * Python
-* SQLite
+* SQLite.
