@@ -1,4 +1,3 @@
-.
 
 # Healthcare IoT Deception Honeypot Network
 
